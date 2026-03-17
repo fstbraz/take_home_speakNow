@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
+import { catchError, EMPTY, switchMap, tap } from 'rxjs';
+import { VideoStorageService } from '../services/video-storage.service';
 import {
   DeleteVideo,
   DeleteVideoFailed,
@@ -29,6 +31,8 @@ export interface VideosStateModel {
 })
 @Injectable()
 export class VideosState {
+  private storage = inject(VideoStorageService);
+
   @Selector()
   static videos(state: VideosStateModel): VideoMeta[] {
     return state.videos;
@@ -45,14 +49,27 @@ export class VideosState {
   }
 
   @Action(LoadVideos)
-  loadVideos(_ctx: StateContext<VideosStateModel>): void {}
+  loadVideos(ctx: StateContext<VideosStateModel>) {
+    return this.storage.getAllMeta().pipe(
+      tap(videos => ctx.patchState({ videos })),
+      catchError(() => EMPTY),
+    );
+  }
 
   @Action(SaveVideo)
-  saveVideo(ctx: StateContext<VideosStateModel>, action: SaveVideo): void {
-    ctx.patchState({
-      videos: [...ctx.getState().videos, action.meta],
-      lastSaveError: null,
-    });
+  saveVideo(ctx: StateContext<VideosStateModel>, action: SaveVideo) {
+    return this.storage.saveVideo(action.meta, action.blob).pipe(
+      tap(() =>
+        ctx.patchState({
+          videos: [...ctx.getState().videos, action.meta],
+          lastSaveError: null,
+        }),
+      ),
+      catchError(() => {
+        ctx.dispatch(new SaveVideoFailed(`Failed to save "${action.meta.name}"`));
+        return EMPTY;
+      }),
+    );
   }
 
   @Action(SaveVideoFailed)
@@ -61,11 +78,22 @@ export class VideosState {
   }
 
   @Action(DeleteVideo)
-  deleteVideo(ctx: StateContext<VideosStateModel>, action: DeleteVideo): void {
+  deleteVideo(ctx: StateContext<VideosStateModel>, action: DeleteVideo) {
+    const snapshot = ctx.getState().videos;
+    const meta = snapshot.find(v => v.id === action.id);
+    if (!meta) return EMPTY;
+
     ctx.patchState({
-      videos: ctx.getState().videos.filter((v) => v.id !== action.id),
+      videos: snapshot.filter(v => v.id !== action.id),
       lastDeleteError: null,
     });
+
+    return this.storage.deleteVideo(action.id).pipe(
+      catchError(() => {
+        ctx.dispatch(new DeleteVideoFailed(action.id, meta));
+        return EMPTY;
+      }),
+    );
   }
 
   @Action(DeleteVideoFailed)
