@@ -21,7 +21,22 @@
     />
     <app-recorded-videos-sidebar
       (play)="onPlay($event)"
-      (delete)="onDelete($event)"
+      (delete)="onDeleteRequest($event)"
     />
   </div>
 </div>
+
+@if (activeBlobUrl()) {
+  <app-video-player-modal
+    [blobUrl]="activeBlobUrl()!"
+    (close)="onClosePlayer()"
+  />
+}
+
+@if (deleteTargetId()) {
+  <app-delete-confirm-dialog
+    [videoId]="deleteTargetId()!"
+    (confirm)="onDeleteConfirm($event)"
+    (cancel)="onDeleteCancel()"
+  />
+}

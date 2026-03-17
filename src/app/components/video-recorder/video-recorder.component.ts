@@ -2,16 +2,25 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } 
 import { Store } from '@ngxs/store';
 import { RecordingState } from '../../state/recording.state';
 import { RecordingService } from '../../services/recording.service';
+import { VideoStorageService } from '../../services/video-storage.service';
 import { StartRecording, StopRecording } from '../../state/recording.actions';
 import { DeleteVideo } from '../../state/videos.actions';
 import { VideoPreviewComponent } from '../video-preview/video-preview.component';
 import { RecorderControlsComponent } from '../recorder-controls/recorder-controls.component';
 import { RecordedVideosSidebarComponent } from '../recorded-videos-sidebar/recorded-videos-sidebar.component';
+import { VideoPlayerModalComponent } from '../video-player-modal/video-player-modal.component';
+import { DeleteConfirmDialogComponent } from '../delete-confirm-dialog/delete-confirm-dialog.component';
 
 @Component({
   selector: 'app-video-recorder',
   standalone: true,
-  imports: [VideoPreviewComponent, RecorderControlsComponent, RecordedVideosSidebarComponent],
+  imports: [
+    VideoPreviewComponent,
+    RecorderControlsComponent,
+    RecordedVideosSidebarComponent,
+    VideoPlayerModalComponent,
+    DeleteConfirmDialogComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-recorder.component.html',
   styleUrl: './video-recorder.component.scss',
@@ -19,6 +28,7 @@ import { RecordedVideosSidebarComponent } from '../recorded-videos-sidebar/recor
 export class VideoRecorderComponent {
   private store = inject(Store);
   private recordingService = inject(RecordingService);
+  private storage = inject(VideoStorageService);
 
   status = this.store.selectSignal(RecordingState.status);
   errorMessage = this.store.selectSignal(RecordingState.errorMessage);
@@ -46,9 +56,28 @@ export class VideoRecorderComponent {
 
   onSettings(): void {}
 
-  onPlay(_id: string): void {}
+  onPlay(id: string): void {
+    this.storage.getBlobUrl(id).subscribe(url => {
+      if (url) this.activeBlobUrl.set(url);
+    });
+  }
 
-  onDelete(id: string): void {
+  onClosePlayer(): void {
+    const url = this.activeBlobUrl();
+    if (url) URL.revokeObjectURL(url);
+    this.activeBlobUrl.set(null);
+  }
+
+  onDeleteRequest(id: string): void {
+    this.deleteTargetId.set(id);
+  }
+
+  onDeleteConfirm(id: string): void {
     this.store.dispatch(new DeleteVideo(id));
+    this.deleteTargetId.set(null);
+  }
+
+  onDeleteCancel(): void {
+    this.deleteTargetId.set(null);
   }
 }
