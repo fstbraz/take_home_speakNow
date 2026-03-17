@@ -1,4 +1,6 @@
-import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs';
 import { provideStore, Store } from '@ngxs/store';
 import { BandwidthState } from './state/bandwidth.state';
 import { RecordingState } from './state/recording.state';
@@ -7,17 +9,19 @@ import { DetectBandwidth } from './state/bandwidth.actions';
 import { InitializeCamera } from './state/recording.actions';
 import { LoadVideos } from './state/videos.actions';
 
-function initApp(store: Store): () => Promise<void> {
-  return async () => {
-    await store.dispatch(new DetectBandwidth()).toPromise();
-    store.dispatch(new InitializeCamera());
-    store.dispatch(new LoadVideos());
-  };
+function initApp(store: Store): () => Observable<void> {
+  return () =>
+    store.dispatch(new DetectBandwidth()).pipe(
+      tap(() => {
+        store.dispatch(new InitializeCamera());
+        store.dispatch(new LoadVideos());
+      }),
+    );
 }
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideStore([BandwidthState, RecordingState, VideosState]),
     {
       provide: APP_INITIALIZER,

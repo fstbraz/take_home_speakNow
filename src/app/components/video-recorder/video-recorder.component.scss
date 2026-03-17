@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+.recorder-layout {
+  width: 1920px;
+  height: 1080px;
+  background: #111;
+  display: flex;
+  padding: 40px;
+  gap: 40px;
+  position: relative;
+}
+
+.preview-col {
+  width: 1500px;
+  height: 1000px;
+  flex-shrink: 0;
+  position: relative;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sidebar-col {
+  width: 300px;
+  height: 1000px;
+  flex-shrink: 0;
+  background: #1a1a1a;
+  border-radius: 8px;
+  overflow-y: auto;
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #ff6b6b;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+
+  .error-icon {
+    font-size: 48px;
+  }
+
+  p {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+}

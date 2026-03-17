@@ -1,0 +1,18 @@
+<div class="recorder-layout">
+  <!-- Left: camera preview (1500px) -->
+  <div class="preview-col">
+    @if (isError()) {
+      <div class="error-state" role="alert">
+        <span class="error-icon" aria-hidden="true">⚠</span>
+        <p>{{ errorMessage() }}</p>
+      </div>
+    } @else {
+      <app-video-preview [stream]="stream()" />
+    }
+  </div>
+
+  <!-- Right: sidebar (300px) -->
+  <div class="sidebar-col">
+    <!-- Populated in Step 7 -->
+  </div>
+</div>
