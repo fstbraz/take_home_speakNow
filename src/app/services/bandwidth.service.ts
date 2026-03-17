@@ -35,8 +35,8 @@ export class BandwidthService {
   }
 
   private mbpsToQuality(mbps: number): Quality {
-    if (mbps >= 5) return 'high';
-    if (mbps >= 1) return 'medium';
+    if (mbps > 5) return 'high';
+    if (mbps >= 2) return 'medium';
     return 'low';
   }
 }

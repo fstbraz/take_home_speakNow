@@ -2,15 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   OnDestroy,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Store } from '@ngxs/store';
 import { distinctUntilChanged, filter, timer } from 'rxjs';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { DestroyRef } from '@angular/core';
+import { BandwidthState } from '../../state/bandwidth.state';
 import { VideosState } from '../../state/videos.state';
 
 @Component({
@@ -43,6 +43,7 @@ import { VideosState } from '../../state/videos.state';
       z-index: 300;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       animation: slide-up 0.2s ease;
+      white-space: nowrap;
     }
 
     .icon { color: #e53935; }
@@ -59,18 +60,21 @@ export class ToastComponent implements OnDestroy {
 
   private saveError = this.store.selectSignal(VideosState.lastSaveError);
   private deleteError = this.store.selectSignal(VideosState.lastDeleteError);
+  private bandwidthFailed = this.store.selectSignal(BandwidthState.detectionFailed);
 
-  message = computed(() => this.saveError() ?? this.deleteError() ?? '');
+  message = computed(() => {
+    if (this.bandwidthFailed()) return 'Bandwidth detection failed — defaulting to Medium quality';
+    return this.saveError() ?? this.deleteError() ?? '';
+  });
+
   visible = signal(false);
 
   constructor() {
-    const error$ = toObservable(this.message).pipe(
+    toObservable(this.message).pipe(
       filter(m => m.length > 0),
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
-    );
-
-    error$.subscribe(() => {
+    ).subscribe(() => {
       this.visible.set(true);
       timer(4000)
         .pipe(takeUntilDestroyed(this.destroyRef))

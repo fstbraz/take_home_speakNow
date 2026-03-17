@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext, Store } from '@ngxs/store';
-import { catchError, EMPTY, finalize, tap } from 'rxjs';
+import { catchError, EMPTY, finalize, switchMap, take, tap, timer } from 'rxjs';
 import { RecordingService } from '../services/recording.service';
 import { BandwidthState } from './bandwidth.state';
 import {
@@ -18,6 +18,8 @@ export interface RecordingStateModel {
   status: RecordingStatus;
   errorMessage: string | null;
 }
+
+const MAX_RECORDING_MS = 10_000;
 
 @State<RecordingStateModel>({
   name: 'recording',
@@ -60,14 +62,26 @@ export class RecordingState {
   }
 
   @Action(StartRecording)
-  startRecording(ctx: StateContext<RecordingStateModel>): void {
-    if (ctx.getState().status !== 'idle') return;
+  startRecording(ctx: StateContext<RecordingStateModel>) {
+    if (ctx.getState().status !== 'idle') return EMPTY;
     this.recordingService.start();
     ctx.patchState({ status: 'recording' });
+
+    // Auto-stop after MAX_RECORDING_MS
+    return timer(MAX_RECORDING_MS).pipe(
+      take(1),
+      switchMap(() => {
+        if (ctx.getState().status === 'recording') {
+          return ctx.dispatch(new StopRecording());
+        }
+        return EMPTY;
+      }),
+    );
   }
 
   @Action(StopRecording)
   stopRecording(ctx: StateContext<RecordingStateModel>) {
+    if (ctx.getState().status !== 'recording') return EMPTY;
     ctx.patchState({ status: 'stopping' });
 
     return this.recordingService.stop().pipe(
