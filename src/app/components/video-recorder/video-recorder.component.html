@@ -13,6 +13,11 @@
 
   <!-- Right: sidebar (300px) -->
   <div class="sidebar-col">
-    <!-- Populated in Step 7 -->
+    <app-recorder-controls
+      [status]="status()"
+      (record)="onRecord()"
+      (stop)="onStop()"
+      (settings)="onSettings()"
+    />
   </div>
 </div>

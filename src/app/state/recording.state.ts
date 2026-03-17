@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext, Store } from '@ngxs/store';
+import { catchError, EMPTY, finalize, tap } from 'rxjs';
 import { RecordingService } from '../services/recording.service';
 import { BandwidthState } from './bandwidth.state';
 import {
@@ -38,24 +39,24 @@ export class RecordingState {
   }
 
   @Action(InitializeCamera)
-  async initializeCamera(ctx: StateContext<RecordingStateModel>): Promise<void> {
-    const currentStatus = ctx.getState().status;
-    if (currentStatus === 'recording') return; // guard: no restart during recording
+  initializeCamera(ctx: StateContext<RecordingStateModel>) {
+    if (ctx.getState().status === 'recording') return EMPTY;
 
     if (!this.recordingService.isSupported) {
       ctx.dispatch(new CameraError('MediaRecorder is not supported in this browser.'));
-      return;
+      return EMPTY;
     }
 
     ctx.patchState({ status: 'initializing', errorMessage: null });
     const quality = this.store.selectSnapshot(BandwidthState.quality);
-    try {
-      await this.recordingService.initStream(quality);
-      ctx.patchState({ status: 'idle' });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Camera initialization failed.';
-      ctx.dispatch(new CameraError(msg));
-    }
+
+    return this.recordingService.initStream(quality).pipe(
+      tap(() => ctx.patchState({ status: 'idle' })),
+      catchError((err: Error) => {
+        ctx.dispatch(new CameraError(err.message ?? 'Camera initialization failed.'));
+        return EMPTY;
+      }),
+    );
   }
 
   @Action(StartRecording)
@@ -66,14 +67,14 @@ export class RecordingState {
   }
 
   @Action(StopRecording)
-  async stopRecording(ctx: StateContext<RecordingStateModel>): Promise<void> {
+  stopRecording(ctx: StateContext<RecordingStateModel>) {
     ctx.patchState({ status: 'stopping' });
-    try {
-      const { meta, blob } = await this.recordingService.stop();
-      await ctx.dispatch(new SaveVideo(meta, blob)).toPromise();
-    } finally {
-      ctx.patchState({ status: 'idle' });
-    }
+
+    return this.recordingService.stop().pipe(
+      tap(({ meta, blob }) => ctx.dispatch(new SaveVideo(meta, blob))),
+      catchError(() => EMPTY),
+      finalize(() => ctx.patchState({ status: 'idle' })),
+    );
   }
 
   @Action(AbortRecording)

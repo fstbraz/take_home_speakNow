@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext, Store } from '@ngxs/store';
+import { tap } from 'rxjs';
 import { BandwidthService } from '../services/bandwidth.service';
 import { DetectBandwidth, SetQuality } from './bandwidth.actions';
 import { InitializeCamera } from './recording.actions';
@@ -25,15 +26,15 @@ export class BandwidthState {
   }
 
   @Action(DetectBandwidth)
-  async detectBandwidth(ctx: StateContext<BandwidthStateModel>): Promise<void> {
-    const quality = await this.bandwidthService.detect();
-    ctx.patchState({ quality });
+  detectBandwidth(ctx: StateContext<BandwidthStateModel>) {
+    return this.bandwidthService.detect().pipe(
+      tap(quality => ctx.patchState({ quality })),
+    );
   }
 
   @Action(SetQuality)
-  setQuality(ctx: StateContext<BandwidthStateModel>, action: SetQuality): void {
+  setQuality(ctx: StateContext<BandwidthStateModel>, action: SetQuality) {
     ctx.patchState({ quality: action.quality });
-    // Restart camera stream at new quality (no-op if currently recording — guard in InitializeCamera)
     this.store.dispatch(new InitializeCamera());
   }
 }

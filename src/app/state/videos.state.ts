@@ -44,11 +44,8 @@ export class VideosState {
     return state.lastDeleteError;
   }
 
-  // Populated in Step 6 when VideoStorageService is added
   @Action(LoadVideos)
-  loadVideos(_ctx: StateContext<VideosStateModel>): void {
-    // stub — implemented in Step 6
-  }
+  loadVideos(_ctx: StateContext<VideosStateModel>): void {}
 
   @Action(SaveVideo)
   saveVideo(ctx: StateContext<VideosStateModel>, action: SaveVideo): void {
