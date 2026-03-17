@@ -3,13 +3,15 @@ import { Store } from '@ngxs/store';
 import { RecordingState } from '../../state/recording.state';
 import { RecordingService } from '../../services/recording.service';
 import { StartRecording, StopRecording } from '../../state/recording.actions';
+import { DeleteVideo } from '../../state/videos.actions';
 import { VideoPreviewComponent } from '../video-preview/video-preview.component';
 import { RecorderControlsComponent } from '../recorder-controls/recorder-controls.component';
+import { RecordedVideosSidebarComponent } from '../recorded-videos-sidebar/recorded-videos-sidebar.component';
 
 @Component({
   selector: 'app-video-recorder',
   standalone: true,
-  imports: [VideoPreviewComponent, RecorderControlsComponent],
+  imports: [VideoPreviewComponent, RecorderControlsComponent, RecordedVideosSidebarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-recorder.component.html',
   styleUrl: './video-recorder.component.scss',
@@ -22,13 +24,14 @@ export class VideoRecorderComponent {
   errorMessage = this.store.selectSignal(RecordingState.errorMessage);
 
   stream = signal<MediaStream | null>(null);
+  activeBlobUrl = signal<string | null>(null);
+  deleteTargetId = signal<string | null>(null);
 
   isError = computed(() => this.status() === 'error');
 
   constructor() {
-    // Keep stream signal in sync whenever status changes
     effect(() => {
-      this.status(); // track dependency
+      this.status();
       this.stream.set(this.recordingService.getStream());
     });
   }
@@ -42,4 +45,10 @@ export class VideoRecorderComponent {
   }
 
   onSettings(): void {}
+
+  onPlay(_id: string): void {}
+
+  onDelete(id: string): void {
+    this.store.dispatch(new DeleteVideo(id));
+  }
 }

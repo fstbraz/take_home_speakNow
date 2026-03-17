@@ -1,5 +1,5 @@
 <div class="recorder-layout">
-  <!-- Left: camera preview (1500px) -->
+  <!-- Left: camera preview -->
   <div class="preview-col">
     @if (isError()) {
       <div class="error-state" role="alert">
@@ -11,13 +11,17 @@
     }
   </div>
 
-  <!-- Right: sidebar (300px) -->
+  <!-- Right: sidebar -->
   <div class="sidebar-col">
     <app-recorder-controls
       [status]="status()"
       (record)="onRecord()"
       (stop)="onStop()"
       (settings)="onSettings()"
+    />
+    <app-recorded-videos-sidebar
+      (play)="onPlay($event)"
+      (delete)="onDelete($event)"
     />
   </div>
 </div>
