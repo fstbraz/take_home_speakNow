@@ -1,59 +1,95 @@
-# SpeaknowChallenge
+# SpeakNow — Webcam Video Recorder
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.2.
+A webcam recorder built with Angular 21, NGXS state management, and IndexedDB persistence.
 
-## Development server
-
-To start a local development server, run:
+## Setup
 
 ```bash
-ng serve
+npm install
+ng serve        # dev server at http://localhost:4200
+npm test        # run all tests (Vitest)
+ng build        # production build
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Grant camera/microphone permission when prompted.
 
-## Code scaffolding
+## Features
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Record** webcam video at low / medium / high quality
+- **Automatic quality selection** — bandwidth is tested on startup and the best quality is pre-selected
+- **Thumbnail capture** — a frame is captured from every recording and shown in the sidebar
+- **Persistent storage** — recordings survive page reloads via IndexedDB (video blobs + metadata stored separately)
+- **Playback** — click any thumbnail to watch the recording in a modal
+- **Delete** — remove recordings with a confirmation step; failed deletes are rolled back automatically
+- **Settings panel** — change quality at any time; the camera stream restarts automatically
 
-```bash
-ng generate component component-name
-```
+## Architecture
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### State (NGXS)
 
-```bash
-ng generate --help
-```
+Three state slices, each with a clear responsibility:
 
-## Building
+| State | Responsibility |
+|---|---|
+| `BandwidthState` | Detected/selected quality (`low \| medium \| high`) |
+| `RecordingState` | Camera lifecycle (`idle → initializing → recording → stopping → error`) |
+| `VideosState` | Recorded video metadata list + error signals |
 
-To build the project run:
+`APP_INITIALIZER` runs `DetectBandwidth → InitializeCamera + LoadVideos` as a sequential Observable chain before the first render.
 
-```bash
-ng build
-```
+### Persistence
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+`VideoStorageService` wraps the `idb` library with two object stores:
 
-## Running unit tests
+- **`videos-meta`** — lightweight `VideoMeta` records (id, name, date, duration, quality, thumbnail data URL)
+- **`videos-blob`** — raw `Blob` objects keyed by the same id
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+`SaveVideo` writes to IDB first, then updates state on success. `DeleteVideo` is optimistic (removes from state immediately) and rolls back on IDB failure.
 
-```bash
-ng test
-```
+### Reactive patterns
 
-## Running end-to-end tests
+All async work uses RxJS Observables — no `async/await`, `Promise`, `try/catch`, `setTimeout`, or `setInterval` in application code. The `idb` library is Promise-based; `from()` bridges it at the service boundary. Timing (elapsed recording timer, bandwidth timeout) uses `interval()` and `race()` with `timer()`.
 
-For end-to-end (e2e) testing, run:
+### Bandwidth detection
 
-```bash
-ng e2e
-```
+On startup, the app fetches a 100 KB asset (`/assets/bandwidth-test.bin`) and races it against a 5-second `timer()`. The result maps to a quality tier:
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+| Mbps | Quality |
+|---|---|
+| ≥ 5 | high (1080p) |
+| 1–5 | medium (720p) |
+| < 1 | low (360p) |
+| timeout | medium |
+| error | low |
 
-## Additional Resources
+## Screenshots
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Camera preview (idle state)
+![Camera preview](docs/screenshots/01-camera-preview.png)
+
+### Active recording
+![Active recording](docs/screenshots/02-recording.png)
+
+### Thumbnail after first recording
+![Thumbnail capture](docs/screenshots/03-thumbnail.png)
+
+### Sidebar with multiple recordings
+![Sidebar](docs/screenshots/04-sidebar-videos.png)
+
+### Video playback modal
+![Playback modal](docs/screenshots/05-playback-modal.png)
+
+### Delete confirmation dialog
+![Delete dialog](docs/screenshots/06-delete-dialog.png)
+
+### Settings panel
+![Settings panel](docs/screenshots/07-settings-panel.png)
+
+## Assumptions & trade-offs
+
+- **No server** — everything is client-side; IndexedDB is the only storage
+- **No routing** — single-page app, no URL-based navigation needed
+- **Zoneless Angular** — uses `provideZonelessChangeDetection()` with OnPush throughout; signals drive all reactivity
+- **Blob lifecycle** — `URL.createObjectURL` URLs are revoked immediately after the playback modal closes to prevent memory leaks
+- **MediaRecorder format** — prefers `video/webm;codecs=vp9`, falls back through vp8/webm/mp4 depending on browser support
+- **Thumbnail** — captured at 0.5 s (or mid-point for very short clips) at 260×180 px; stored inline as a PNG data URL in the metadata record to avoid a separate IDB lookup on every render
