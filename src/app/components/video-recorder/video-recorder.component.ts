@@ -12,6 +12,7 @@ import { RecordedVideosSidebarComponent } from '../recorded-videos-sidebar/recor
 import { VideoPlayerModalComponent } from '../video-player-modal/video-player-modal.component';
 import { DeleteConfirmDialogComponent } from '../delete-confirm-dialog/delete-confirm-dialog.component';
 import { SettingsPanelComponent } from '../settings-panel/settings-panel.component';
+import { ToastComponent } from '../toast/toast.component';
 
 @Component({
   selector: 'app-video-recorder',
@@ -23,6 +24,7 @@ import { SettingsPanelComponent } from '../settings-panel/settings-panel.compone
     VideoPlayerModalComponent,
     DeleteConfirmDialogComponent,
     SettingsPanelComponent,
+    ToastComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-recorder.component.html',
