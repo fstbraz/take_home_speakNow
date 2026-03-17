@@ -40,3 +40,11 @@
     (cancel)="onDeleteCancel()"
   />
 }
+
+@if (settingsOpen()) {
+  <app-settings-panel
+    [currentQuality]="currentQuality()"
+    [recommendedQuality]="recommendedQuality()"
+    (close)="settingsOpen.set(false)"
+  />
+}

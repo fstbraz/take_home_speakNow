@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { RecordingState } from '../../state/recording.state';
+import { BandwidthState } from '../../state/bandwidth.state';
 import { RecordingService } from '../../services/recording.service';
 import { VideoStorageService } from '../../services/video-storage.service';
 import { StartRecording, StopRecording } from '../../state/recording.actions';
@@ -10,6 +11,7 @@ import { RecorderControlsComponent } from '../recorder-controls/recorder-control
 import { RecordedVideosSidebarComponent } from '../recorded-videos-sidebar/recorded-videos-sidebar.component';
 import { VideoPlayerModalComponent } from '../video-player-modal/video-player-modal.component';
 import { DeleteConfirmDialogComponent } from '../delete-confirm-dialog/delete-confirm-dialog.component';
+import { SettingsPanelComponent } from '../settings-panel/settings-panel.component';
 
 @Component({
   selector: 'app-video-recorder',
@@ -20,6 +22,7 @@ import { DeleteConfirmDialogComponent } from '../delete-confirm-dialog/delete-co
     RecordedVideosSidebarComponent,
     VideoPlayerModalComponent,
     DeleteConfirmDialogComponent,
+    SettingsPanelComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-recorder.component.html',
@@ -32,10 +35,13 @@ export class VideoRecorderComponent {
 
   status = this.store.selectSignal(RecordingState.status);
   errorMessage = this.store.selectSignal(RecordingState.errorMessage);
+  currentQuality = this.store.selectSignal(BandwidthState.quality);
+  recommendedQuality = this.store.selectSignal(BandwidthState.quality);
 
   stream = signal<MediaStream | null>(null);
   activeBlobUrl = signal<string | null>(null);
   deleteTargetId = signal<string | null>(null);
+  settingsOpen = signal(false);
 
   isError = computed(() => this.status() === 'error');
 
@@ -54,7 +60,9 @@ export class VideoRecorderComponent {
     this.store.dispatch(new StopRecording());
   }
 
-  onSettings(): void {}
+  onSettings(): void {
+    this.settingsOpen.set(true);
+  }
 
   onPlay(id: string): void {
     this.storage.getBlobUrl(id).subscribe(url => {
