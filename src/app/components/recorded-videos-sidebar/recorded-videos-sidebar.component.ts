@@ -11,8 +11,6 @@ import { VideoThumbnailComponent } from '../video-thumbnail/video-thumbnail.comp
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="sidebar">
-      <h2 class="title">Recordings</h2>
-
       @if (videos().length === 0) {
         <app-empty-state />
       } @else {
@@ -33,30 +31,24 @@ import { VideoThumbnailComponent } from '../video-thumbnail/video-thumbnail.comp
       display: flex;
       flex-direction: column;
       height: 100%;
-      overflow: hidden;
-    }
-
-    .title {
-      margin: 0;
-      padding: 12px 16px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      border-bottom: 1px solid #222;
+      align-items: center;
+      justify-content: center;
     }
 
     .list {
-      flex: 1;
+      width: 100%;
+      height: 100%;
       overflow-y: auto;
-      padding: 8px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      box-sizing: border-box;
+      justify-content: flex-start;
+      align-self: flex-start;
 
       &::-webkit-scrollbar { width: 4px; }
-      &::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+      &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
     }
   `,
 })

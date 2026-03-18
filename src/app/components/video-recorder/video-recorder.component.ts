@@ -7,6 +7,7 @@ import { VideoStorageService } from '../../services/video-storage.service';
 import { StartRecording, StopRecording } from '../../state/recording.actions';
 import { DeleteVideo } from '../../state/videos.actions';
 import { VideoPreviewComponent } from '../video-preview/video-preview.component';
+import { SpinnerComponent } from '../spinner/spinner.component';
 import { RecorderControlsComponent } from '../recorder-controls/recorder-controls.component';
 import { RecordedVideosSidebarComponent } from '../recorded-videos-sidebar/recorded-videos-sidebar.component';
 import { VideoPlayerModalComponent } from '../video-player-modal/video-player-modal.component';
@@ -19,6 +20,7 @@ import { ToastComponent } from '../toast/toast.component';
   standalone: true,
   imports: [
     VideoPreviewComponent,
+    SpinnerComponent,
     RecorderControlsComponent,
     RecordedVideosSidebarComponent,
     VideoPlayerModalComponent,

@@ -6,12 +6,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="empty">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="2" y="6" width="20" height="14" rx="2" stroke="#555" stroke-width="1.5"/>
-        <path d="M16 13l-4-3v6l4-3z" fill="#555"/>
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="rgba(255,255,255,0.6)" aria-hidden="true">
+        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
       </svg>
-      <p>No recordings yet</p>
-      <span>Hit Record to get started</span>
+      <p>There are no recorded videos yet</p>
     </div>
   `,
   styles: `
@@ -19,23 +17,16 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       gap: 8px;
       padding: 32px 16px;
-      color: #555;
       text-align: center;
     }
 
     p {
       margin: 0;
-      font-size: 14px;
-      font-weight: 600;
-      color: #666;
-    }
-
-    span {
-      font-size: 12px;
-      color: #444;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Lato', sans-serif;
     }
   `,
 })

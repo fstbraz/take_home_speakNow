@@ -13,135 +13,121 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 import { RecordingStatus } from '../../state/recording.state';
 
+const MAX_MS = 10_000;
+
 @Component({
   selector: 'app-recorder-controls',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="controls">
-      <div class="elapsed" [class.visible]="isRecording()">
-        <span class="dot"></span>
-        {{ elapsedDisplay() }}
-      </div>
-
+    <div class="pill">
       @if (isRecording()) {
-        <button class="btn btn-stop" (click)="stop.emit()" aria-label="Stop recording">
-          <span class="icon-stop"></span>
-          Stop
+        <!-- Stop button + progress bar -->
+        <button class="btn-stop" (click)="stop.emit()" aria-label="Stop recording">
+          <span class="stop-icon"></span>
         </button>
+        <div class="progress-wrap" aria-label="Recording progress">
+          <div class="progress-bar" [style.width.%]="progressPct()"></div>
+          <span class="elapsed-label">{{ elapsedLabel() }}</span>
+        </div>
       } @else {
+        <!-- Record button -->
         <button
-          class="btn btn-record"
+          class="btn-record"
           (click)="record.emit()"
           [disabled]="!canRecord()"
           aria-label="Start recording"
         >
-          <span class="icon-rec"></span>
-          Record
+          <span class="record-dot"></span>
         </button>
       }
-
-      <button
-        class="btn btn-settings"
-        (click)="settings.emit()"
-        [disabled]="isRecording()"
-        aria-label="Open settings"
-      >
-        ⚙
-      </button>
     </div>
   `,
   styles: `
-    .controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 0;
-    }
-
-    .elapsed {
-      font-size: 13px;
-      color: #888;
-      height: 20px;
+    .pill {
       display: flex;
       align-items: center;
-      gap: 6px;
-      visibility: hidden;
-
-      &.visible {
-        visibility: visible;
-        color: #e55;
-      }
+      justify-content: center;
+      gap: 16px;
+      width: 320px;
+      height: 80px;
+      border-radius: 100px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      padding: 10px 40px;
     }
 
-    .dot {
-      width: 8px;
-      height: 8px;
+    .btn-record, .btn-stop {
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      background: #e55;
-      animation: blink 1s step-start infinite;
-    }
-
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-
-    .btn {
-      width: 100%;
-      padding: 10px 0;
       border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      flex-shrink: 0;
       transition: opacity 0.15s;
 
-      &:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-      }
-    }
-
-    .btn-record {
-      background: #e53935;
-      color: #fff;
+      &:disabled { opacity: 0.4; cursor: not-allowed; }
       &:not(:disabled):hover { opacity: 0.85; }
     }
 
-    .btn-stop {
-      background: #333;
-      color: #fff;
-      border: 2px solid #e53935;
-      &:hover { opacity: 0.85; }
+    .btn-record {
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.3);
     }
 
-    .btn-settings {
-      background: transparent;
-      color: #aaa;
-      font-size: 20px;
-      padding: 6px 0;
-      &:not(:disabled):hover { color: #fff; }
-    }
-
-    .icon-rec {
-      width: 12px;
-      height: 12px;
+    .record-dot {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: currentColor;
-      display: inline-block;
+      background: #e53935;
+      display: block;
     }
 
-    .icon-stop {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-      background: currentColor;
-      display: inline-block;
+    .btn-stop {
+      background: rgba(80, 97, 208, 0.3);
+      border: 2px solid #5061d0;
+    }
+
+    .stop-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: #5061d0;
+      display: block;
+    }
+
+    .progress-wrap {
+      position: relative;
+      flex: 1;
+      height: 24px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: #5061d0;
+      border-radius: 4px;
+      transition: width 0.1s linear;
+    }
+
+    .elapsed-label {
+      position: relative;
+      z-index: 1;
+      font-size: 16px;
+      font-weight: 900;
+      color: #fff;
+      white-space: nowrap;
     }
   `,
 })
@@ -152,7 +138,6 @@ export class RecorderControlsComponent {
 
   record = output<void>();
   stop = output<void>();
-  settings = output<void>();
 
   isRecording = computed(() => this.status() === 'recording');
   canRecord = computed(() => this.status() === 'idle');
@@ -160,16 +145,11 @@ export class RecorderControlsComponent {
   private elapsedMs = signal(0);
   private startMs = signal(0);
 
-  elapsedDisplay = computed(() => {
-    const s = Math.floor(this.elapsedMs() / 1000);
-    const m = Math.floor(s / 60);
-    const ss = String(s % 60).padStart(2, '0');
-    return `${m}:${ss}`;
-  });
+  progressPct = computed(() => Math.min((this.elapsedMs() / MAX_MS) * 100, 100));
+  elapsedLabel = computed(() => `${(this.elapsedMs() / 1000).toFixed(1)} s`);
 
   constructor() {
-    // Tick every second while recording to update the elapsed display
-    interval(1000)
+    interval(100)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         if (this.isRecording()) {
@@ -177,7 +157,6 @@ export class RecorderControlsComponent {
         }
       });
 
-    // Reset / capture start time when recording state changes
     effect(() => {
       if (this.isRecording()) {
         this.startMs.set(Date.now());

@@ -50,17 +50,15 @@ describe('RecorderControlsComponent', () => {
     expect(emitted).toBe(true);
   });
 
-  it('should emit settings event on settings click when idle', async () => {
-    const fixture = await createComponent('idle');
-    let emitted = false;
-    fixture.componentInstance.settings.subscribe(() => (emitted = true));
-    fixture.debugElement.query(By.css('.btn-settings')).nativeElement.click();
-    expect(emitted).toBe(true);
+  it('should show progress bar when recording', async () => {
+    const fixture = await createComponent('recording');
+    const progress = fixture.debugElement.query(By.css('.progress-wrap'));
+    expect(progress).toBeTruthy();
   });
 
-  it('should show elapsed time display when recording', async () => {
+  it('should show elapsed label when recording', async () => {
     const fixture = await createComponent('recording');
-    const elapsed = fixture.debugElement.query(By.css('.elapsed.visible'));
-    expect(elapsed).toBeTruthy();
+    const label = fixture.debugElement.query(By.css('.elapsed-label'));
+    expect(label).toBeTruthy();
   });
 });

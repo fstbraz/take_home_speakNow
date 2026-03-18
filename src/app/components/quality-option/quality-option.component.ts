@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { Quality } from '../../state/bandwidth.state';
 
 const LABELS: Record<Quality, { title: string; subtitle: string }> = {
-  low:    { title: '360p',  subtitle: 'Low bandwidth' },
-  medium: { title: '720p',  subtitle: 'Balanced' },
-  high:   { title: '1080p', subtitle: 'High quality' },
+  low:    { title: 'Low',    subtitle: '360p · Low bandwidth' },
+  medium: { title: 'Medium', subtitle: '720p · Balanced' },
+  high:   { title: 'High',   subtitle: '1080p · High quality' },
 };
 
 @Component({
@@ -15,72 +15,83 @@ const LABELS: Record<Quality, { title: string; subtitle: string }> = {
     <button
       class="option"
       [class.selected]="selected()"
-      [class.recommended]="recommended()"
       (click)="select.emit(quality())"
       [attr.aria-pressed]="selected()"
     >
-      <span class="title">{{ label().title }}</span>
-      <span class="subtitle">{{ label().subtitle }}</span>
+      <span class="label-wrap">
+        <span class="title">{{ label().title }}</span>
+        <span class="subtitle">{{ label().subtitle }}</span>
+      </span>
       @if (recommended()) {
         <span class="badge">Recommended</span>
       }
       @if (selected()) {
-        <span class="check" aria-hidden="true">✓</span>
+        <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
       }
     </button>
   `,
   styles: `
     .option {
-      width: 100%;
+      width: 280px;
+      height: 48px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 6px;
-      color: #bbb;
+      gap: 12px;
+      padding: 0 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.7);
       cursor: pointer;
       text-align: left;
-      transition: border-color 0.15s, background 0.15s;
+      transition: background 0.15s, border-color 0.15s;
 
-      &:hover { background: #222; border-color: #444; }
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
 
       &.selected {
-        border-color: #e53935;
-        background: rgba(229, 57, 53, 0.08);
+        background: rgba(80, 97, 208, 0.2);
+        border-color: #5061d0;
         color: #fff;
       }
+    }
 
-      &.recommended:not(.selected) {
-        border-color: #555;
-      }
+    .label-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
     }
 
     .title {
       font-size: 14px;
-      font-weight: 600;
-      min-width: 44px;
+      font-weight: 700;
+      line-height: 1;
     }
 
     .subtitle {
-      font-size: 12px;
-      color: #666;
-      flex: 1;
+      font-size: 11px;
+      opacity: 0.6;
+      line-height: 1;
     }
 
     .badge {
       font-size: 10px;
-      padding: 2px 6px;
-      background: #2a2a2a;
+      padding: 2px 8px;
+      background: rgba(80, 97, 208, 0.25);
+      border: 1px solid rgba(80, 97, 208, 0.5);
       border-radius: 10px;
-      color: #888;
-      letter-spacing: 0.3px;
+      color: #8fa0f0;
+      white-space: nowrap;
     }
 
     .check {
-      color: #e53935;
-      font-size: 14px;
+      color: #5061d0;
+      flex-shrink: 0;
     }
   `,
 })
