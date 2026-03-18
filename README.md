@@ -35,7 +35,7 @@ Three state slices, each with a clear responsibility:
 | `RecordingState` | Camera lifecycle (`idle → initializing → recording → stopping → error`) |
 | `VideosState` | Recorded video metadata list + error signals |
 
-`APP_INITIALIZER` runs `DetectBandwidth → InitializeCamera + LoadVideos` as a sequential Observable chain before the first render.
+`provideAppInitializer` runs `DetectBandwidth → InitializeCamera + LoadVideos` as a sequential Observable chain before the first render.
 
 ### Persistence
 
@@ -64,26 +64,20 @@ On startup, the app fetches a 100 KB asset (`/assets/bandwidth-test.bin`) and ra
 
 ## Screenshots
 
-### Camera preview (idle state)
-![Camera preview](docs/screenshots/01-camera-preview.png)
+### Main layout — idle state with recordings
+![Main layout](docs/screenshots/10-final-layout-formating.png)
 
 ### Active recording
 ![Active recording](docs/screenshots/02-recording.png)
 
-### Thumbnail after first recording
-![Thumbnail capture](docs/screenshots/03-thumbnail.png)
-
-### Sidebar with multiple recordings
-![Sidebar](docs/screenshots/04-sidebar-videos.png)
-
-### Video playback modal
-![Playback modal](docs/screenshots/05-playback-modal.png)
-
 ### Delete confirmation dialog
 ![Delete dialog](docs/screenshots/06-delete-dialog.png)
 
+### Video playback modal
+![Playback modal](docs/screenshots/09-video-control-formatting.png)
+
 ### Settings panel
-![Settings panel](docs/screenshots/07-settings-panel.png)
+![Settings panel](docs/screenshots/08-layout-formatting.png)
 
 ## Assumptions & trade-offs
 
