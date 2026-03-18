@@ -1,0 +1,17 @@
+<div class="sidebar">
+  @if (videos().length === 0) {
+    <div class="empty-wrap">
+      <app-empty-state />
+    </div>
+  } @else {
+    <div class="list">
+      @for (video of videos(); track video.id) {
+        <app-video-thumbnail
+          [meta]="video"
+          (play)="play.emit($event)"
+          (delete)="delete.emit($event)"
+        />
+      }
+    </div>
+  }
+</div>

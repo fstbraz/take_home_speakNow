@@ -9,48 +9,8 @@ import { VideoThumbnailComponent } from '../video-thumbnail/video-thumbnail.comp
   standalone: true,
   imports: [EmptyStateComponent, VideoThumbnailComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="sidebar">
-      @if (videos().length === 0) {
-        <app-empty-state />
-      } @else {
-        <div class="list">
-          @for (video of videos(); track video.id) {
-            <app-video-thumbnail
-              [meta]="video"
-              (play)="play.emit($event)"
-              (delete)="delete.emit($event)"
-            />
-          }
-        </div>
-      }
-    </div>
-  `,
-  styles: `
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .list {
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      box-sizing: border-box;
-      justify-content: flex-start;
-      align-self: flex-start;
-
-      &::-webkit-scrollbar { width: 4px; }
-      &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
-    }
-  `,
+  templateUrl: './recorded-videos-sidebar.component.html',
+  styleUrl: './recorded-videos-sidebar.component.scss',
 })
 export class RecordedVideosSidebarComponent {
   private store = inject(Store);

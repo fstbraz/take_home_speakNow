@@ -1,0 +1,45 @@
+<div
+  class="card"
+  role="button"
+  tabindex="0"
+  [attr.aria-label]="'Play ' + meta().name"
+  (click)="play.emit(meta().id)"
+  (keydown.enter)="play.emit(meta().id)"
+>
+  <!-- Figma: h-180px, w-full, rounded-5px -->
+  <div class="image-wrap">
+    <img [src]="meta().thumbnailDataUrl" [alt]="meta().name" class="thumb" />
+
+    <!-- Figma: gradient overlay bottom half rgba(0,0,0,0.7) -->
+    <div class="gradient-overlay" aria-hidden="true"></div>
+
+    <!-- Figma: hover overlay rgba(0,0,0,0.7) + play icon centered + trash icon top-right -->
+    <div class="hover-overlay">
+      <!-- centered play button -->
+      <div class="play-btn" aria-hidden="true">
+        <svg width="2rem" height="2rem" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+      <!-- delete button top-right -->
+      <button
+        class="delete-btn"
+        (click)="$event.stopPropagation(); delete.emit(meta().id)"
+        aria-label="Delete"
+      >
+        <svg width="1.25rem" height="1.25rem" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Figma: meta bar — left-4.62% right-4.62%, text-14px white -->
+    <div class="meta-bar">
+      <div class="date-group">
+        <span class="date-part">{{ formatDateParts(meta().date).date }}</span>
+        <span class="date-part">{{ formatDateParts(meta().date).time }}</span>
+      </div>
+      <span class="duration">{{ formatDuration(meta().durationMs) }}</span>
+    </div>
+  </div>
+</div>

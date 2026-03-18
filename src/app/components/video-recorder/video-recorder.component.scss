@@ -3,109 +3,130 @@
   height: 100%;
 }
 
+/* ─── Page wrapper: fills viewport, gradient bg ─────────────────────────── */
 .recorder-layout {
-  position: relative;
-  display: flex;
+  /*
+   * CSS Grid: 1fr (preview) + fixed sidebar
+   * align-content: start  → grid row sits at top, doesn't stretch to 100dvh
+   * align-items: start    → items sit at top of their row
+   * The sidebar height is controlled separately so it matches the preview.
+   */
+  display: grid;
+  grid-template-columns: 1fr var(--sidebar-w);
+  gap: var(--layout-gap);
+  padding: var(--layout-pad);
   min-height: 100dvh;
-  background: linear-gradient(to bottom, #2b2b2b, #000);
-  padding: 40px;
-  gap: 40px;
-  box-sizing: border-box;
+  background: linear-gradient(to bottom, var(--c-gradient-start), #000);
+  align-content: start;
+  align-items: start;
 
-  @media (max-width: 900px) {
-    padding: 16px;
-    gap: 16px;
+  @media (max-width: 56.25rem) { /* 900px */
+    grid-template-columns: 1fr 13.75rem; /* 220px sidebar */
+    padding: 1rem;
+    gap: 1rem;
   }
 
-  @media (max-width: 700px) {
-    flex-direction: column;
-    overflow-y: auto;
+  @media (max-width: 37.5rem) { /* 600px */
+    grid-template-columns: 1fr;
   }
 }
 
+/* ─── Preview column: 3:2 aspect ratio (Figma 1500×1000) ────────────────── */
 .preview-col {
-  flex: 1 1 0;
-  min-width: 0;
   position: relative;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
+  background: #000;
+  border-radius: var(--r-sm);
   overflow: hidden;
-  aspect-ratio: 16 / 9;
-  align-self: flex-start;
+  aspect-ratio: 3 / 2;
+  width: 100%;
+}
 
-  @media (max-width: 700px) {
+/* ─── Sidebar: same height as preview via the calc formula ──────────────── */
+/*
+ * Preview width = 100vw - 2×pad - gap - sidebar-w
+ * Preview height = preview-width × (2/3)
+ * → sidebar height = (100vw - 2×pad - gap - sidebar-w) × 2/3
+ */
+.sidebar-col {
+  background: var(--c-surface);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  /* Match preview height */
+  height: calc(
+    (100vw - 2 * var(--layout-pad) - var(--layout-gap) - var(--sidebar-w)) * 2 / 3
+  );
+
+  @media (max-width: 56.25rem) {
+    height: calc((100vw - 2rem - 1rem - 13.75rem) * 2 / 3);
+  }
+
+  @media (max-width: 37.5rem) {
+    height: 50vh;
     width: 100%;
-    flex: none;
   }
 }
 
-.controls-overlay {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-}
-
+/* ─── Settings button: 80×80px, bottom-left of preview ──────────────────── */
 .settings-btn {
   position: absolute;
-  left: 70px;
-  bottom: 68px;
-  width: 80px;
-  height: 80px;
+  left:   var(--settings-btn-left);
+  bottom: var(--settings-btn-bottom);
+  width:  var(--settings-btn-size);
+  height: var(--settings-btn-size);
   border-radius: 50%;
   border: none;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
+  background: var(--c-overlay);
+  backdrop-filter: blur(0.375rem);
   color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1.25rem; /* 20px */
   transition: background 0.15s;
   z-index: 10;
+
+  svg { width: 2.5rem; height: 2.5rem; flex-shrink: 0; } /* 40px */
 
   &:hover:not(:disabled) { background: rgba(0, 0, 0, 0.8); }
   &:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  @media (max-width: 900px) {
-    left: 24px;
-    bottom: 24px;
-    width: 56px;
-    height: 56px;
-
-    svg { width: 28px; height: 28px; }
-  }
-
-  @media (max-width: 700px) {
-    bottom: auto;
-    top: 8px;
-    left: 8px;
+  @media (max-width: 56.25rem) {
+    width:  3.25rem;
+    height: 3.25rem;
+    padding: 0.75rem;
+    left:   1rem;
+    bottom: 1rem;
+    svg { width: 1.75rem; height: 1.75rem; }
   }
 }
 
-.sidebar-col {
-  width: 300px;
-  flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-self: flex-start;
-  min-height: min(1000px, 80vh);
+/* ─── Settings popup: beside the gear button, to its right (Figma: left=120px, bottom=28px) */
+.settings-popup {
+  position: absolute;
+  bottom: var(--settings-btn-bottom);  /* same level as button */
+  left: 7.5rem; /* 120px from left of preview-col */
+  z-index: 20;
 
-  @media (max-width: 900px) {
-    width: 240px;
-  }
-
-  @media (max-width: 700px) {
-    width: 100%;
-    min-height: 300px;
-    max-height: 50vh;
+  @media (max-width: 56.25rem) {
+    left: calc(1rem + 3.25rem + 0.5rem);
+    bottom: 1rem;
   }
 }
 
+/* ─── Record/stop pill: centered at bottom ───────────────────────────────── */
+.controls-overlay {
+  position: absolute;
+  bottom: var(--settings-btn-bottom);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+/* ─── Error state ────────────────────────────────────────────────────────── */
 .error-state {
   display: flex;
   flex-direction: column;
@@ -113,17 +134,17 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  min-height: 300px;
-  color: #ff6b6b;
-  gap: 16px;
-  padding: 24px;
+  min-height: 18.75rem;
+  color: var(--c-red);
+  gap: 1rem;
+  padding: 1.5rem;
   text-align: center;
 
-  .error-icon { font-size: 48px; }
+  .error-icon { font-size: 2.5rem; }
 
   p {
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    color: var(--c-text-muted);
     margin: 0;
   }
 }

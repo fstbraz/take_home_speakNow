@@ -15,40 +15,8 @@ import { SpinnerComponent } from '../spinner/spinner.component';
   standalone: true,
   imports: [SpinnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="preview-container">
-      @if (!stream()) {
-        <app-spinner />
-      }
-      <video
-        #videoEl
-        autoplay
-        playsinline
-        muted
-        [class.hidden]="!stream()"
-        aria-label="Camera preview"
-      ></video>
-    </div>
-  `,
-  styles: [`
-    .preview-container {
-      width: 100%;
-      height: 100%;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    video.hidden {
-      display: none;
-    }
-  `],
+  templateUrl: './video-preview.component.html',
+  styleUrl: './video-preview.component.scss',
 })
 export class VideoPreviewComponent implements AfterViewInit, OnChanges {
   stream = input<MediaStream | null>(null);

@@ -1,0 +1,10 @@
+<div class="panel">
+  @for (q of qualities; track q) {
+    <app-quality-option
+      [quality]="q"
+      [selected]="currentQuality() === q"
+      [recommended]="recommendedQuality() === q"
+      (select)="onSelect($event)"
+    />
+  }
+</div>

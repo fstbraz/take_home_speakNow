@@ -1,16 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap');
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* ─── Design tokens (all in rem, base 16px) ─────────────────────────────── */
+:root {
+  /* colours */
+  --c-bg:             #111;
+  --c-gradient-start: #2b2b2b;
+  --c-surface:        rgba(255, 255, 255, 0.06);
+  --c-overlay:        rgba(0, 0, 0, 0.6);
+  --c-blue:           #5061d0;
+  --c-red:            #e53f28;
+  --c-text:           rgba(255, 255, 255, 0.85);
+  --c-text-muted:     rgba(255, 255, 255, 0.6);
+  --c-text-dim:       rgba(255, 255, 255, 0.3);
+  --c-border:         rgba(255, 255, 255, 0.1);
+
+  /* radii */
+  --r-xs:   0.25rem;   /*  4px */
+  --r-sm:   0.5rem;    /*  8px */
+  --r-md:   0.75rem;   /* 12px */
+  --r-pill: 6.25rem;   /* 100px */
+
+  /* layout */
+  --layout-pad:  2.5rem;    /* 40px */
+  --layout-gap:  2.5rem;    /* 40px */
+  --sidebar-w:   18.75rem;  /* 300px */
+
+  /* settings button */
+  --settings-btn-size:   5rem;     /* 80px */
+  --settings-btn-bottom: 1.75rem;  /* 28px */
+  --settings-btn-left:   1.875rem; /* 30px */
+
+  /* recorder pill */
+  --pill-w:   20rem;    /* 320px */
+  --pill-h:   5rem;     /* 80px */
+  --btn-size: 3.75rem;  /* 60px */
 }
 
-html,
-body {
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
   margin: 0;
   padding: 0;
-  background: #000;
+  background: var(--c-bg);
   height: 100%;
   font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }

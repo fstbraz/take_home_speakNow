@@ -65,7 +65,7 @@ export class VideoRecorderComponent {
   }
 
   onSettings(): void {
-    this.settingsOpen.set(true);
+    this.settingsOpen.update(v => !v);
   }
 
   onPlay(id: string): void {

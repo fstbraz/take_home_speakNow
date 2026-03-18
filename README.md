@@ -57,8 +57,8 @@ On startup, the app fetches a 100 KB asset (`/assets/bandwidth-test.bin`) and ra
 | Mbps | Quality |
 |---|---|
 | ≥ 5 | high (1080p) |
-| 1–5 | medium (720p) |
-| < 1 | low (360p) |
+| 2–5 | medium (720p) |
+| < 2 | low (360p) |
 | timeout | medium |
 | error | low |
 

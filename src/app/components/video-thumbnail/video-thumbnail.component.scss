@@ -1,0 +1,107 @@
+.card {
+  width: 100%;
+  cursor: pointer;
+  outline: none;
+  display: block;
+
+  &:focus-visible .image-wrap {
+    outline: 2px solid var(--c-blue);
+  }
+}
+
+/* fluid: 260×180 ≈ 13:9 aspect ratio — scales with sidebar width */
+.image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 13 / 9;
+  border-radius: 0.3125rem;
+  background: #111;
+  overflow: hidden;
+}
+
+.thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Figma: bg-gradient-to-b from-transparent from-50% to-rgba(0,0,0,0.7) */
+.gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 100%);
+  border-radius: 0.3125rem;
+  pointer-events: none;
+}
+
+/* Figma: hover adds rgba(0,0,0,0.7) overlay — play centered, trash top-right */
+.hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  .card:hover & { opacity: 1; }
+}
+
+/* centered play icon */
+.play-btn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 0.75rem;   /* 12px */
+  right: 0.625rem; /* 10px */
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  line-height: 0;
+  transition: color 0.15s;
+
+  &:hover { color: #ff6b6b; }
+}
+
+/* Figma: absolute bottom, left/right 4.62%, justify-between, text-14px (0.875rem) white */
+.meta-bar {
+  position: absolute;
+  bottom: 0;
+  left: 4.62%;
+  right: 4.62%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.5rem; /* 8px */
+  font-size: 0.875rem; /* 14px */
+  color: #fff;
+  font-family: 'Lato', sans-serif;
+  white-space: nowrap;
+}
+
+/* Figma: two date parts with gap-20px (1.25rem) between them */
+.date-group {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem; /* 20px */
+}
+
+.date-part {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+}
+
+.duration {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+}

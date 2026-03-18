@@ -1,0 +1,66 @@
+<div class="backdrop" (click)="close.emit()" role="dialog" aria-modal="true" aria-label="Video playback">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <video
+      #videoEl
+      [src]="blobUrl()"
+      autoplay
+      class="player"
+      (durationchange)="onDurationChange()"
+      (loadedmetadata)="onDurationChange()"
+      (play)="onPlay()"
+      (pause)="onPause()"
+      (ended)="onEnded()"
+    ></video>
+
+    <!-- Figma: X circle top-right -->
+    <button class="btn-close" (click)="close.emit()" aria-label="Close">
+      <svg width="1.5rem" height="1.5rem" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      </svg>
+    </button>
+
+    <!-- Figma: custom controls pill, centered at bottom -->
+    <div class="controls-bar">
+
+      <button
+        class="play-pause-btn"
+        (click)="togglePlay()"
+        [attr.aria-label]="paused() ? 'Play' : 'Pause'"
+      >
+        @if (paused()) {
+          <svg width="1.25rem" height="1.25rem" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        } @else {
+          <svg width="1.25rem" height="1.25rem" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+          </svg>
+        }
+      </button>
+
+      <span class="time">{{ formatTime(currentTime()) }}</span>
+
+      <!--
+        Seek bar: value / max / --pct are all written directly to the DOM
+        element in the RAF loop — Angular never touches them after init,
+        so the thumb moves at native 60 fps with zero change-detection overhead.
+      -->
+      <input
+        #seekEl
+        type="range"
+        class="seek"
+        min="0"
+        max="0"
+        step="any"
+        value="0"
+        (input)="onSeek($event)"
+        aria-label="Seek"
+      />
+
+      <span class="time">{{ formatTime(duration()) }}</span>
+
+    </div>
+
+  </div>
+</div>

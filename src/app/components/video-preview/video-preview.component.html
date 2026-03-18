@@ -1,0 +1,13 @@
+<div class="preview-container">
+  @if (!stream()) {
+    <app-spinner />
+  }
+  <video
+    #videoEl
+    autoplay
+    playsinline
+    muted
+    [class.hidden]="!stream()"
+    aria-label="Camera preview"
+  ></video>
+</div>
