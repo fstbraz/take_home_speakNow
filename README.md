@@ -64,20 +64,35 @@ On startup, the app fetches a 100 KB asset (`/assets/bandwidth-test.bin`) and ra
 
 ## Screenshots
 
-### Main layout — idle state with recordings
-![Main layout](docs/screenshots/10-final-layout-formating.png)
+### Camera Preview
+![Camera Preview](docs/screenshots/01-camera-preview.png)
 
-### Active recording
-![Active recording](docs/screenshots/02-recording.png)
+### Recording
+![Recording](docs/screenshots/02-recording.png)
 
-### Delete confirmation dialog
-![Delete dialog](docs/screenshots/06-delete-dialog.png)
+### Thumbnail
+![Thumbnail](docs/screenshots/03-thumbnail.png)
 
-### Video playback modal
-![Playback modal](docs/screenshots/09-video-control-formatting.png)
+### Sidebar Videos
+![Sidebar Videos](docs/screenshots/04-sidebar-videos.png)
 
-### Settings panel
-![Settings panel](docs/screenshots/08-layout-formatting.png)
+### Playback Modal
+![Playback Modal](docs/screenshots/05-playback-modal.png)
+
+### Delete Dialog
+![Delete Dialog](docs/screenshots/06-delete-dialog.png)
+
+### Settings Panel
+![Settings Panel](docs/screenshots/07-settings-panel.png)
+
+### Layout Formatting
+![Layout Formatting](docs/screenshots/08-layout-formatting.png)
+
+### Video Control Formatting
+![Video Control Formatting](docs/screenshots/09-video-control-formatting.png)
+
+### Final Layout Formating
+![Final Layout Formating](docs/screenshots/10-final-layout-formating.png)
 
 ## Assumptions & trade-offs
 
