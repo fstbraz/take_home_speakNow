@@ -26,7 +26,6 @@
   display: block;
 }
 
-/* Figma: bg-gradient-to-b from-transparent from-50% to-rgba(0,0,0,0.7) */
 .gradient-overlay {
   position: absolute;
   inset: 0;
@@ -35,7 +34,6 @@
   pointer-events: none;
 }
 
-/* Figma: hover adds rgba(0,0,0,0.7) overlay — play centered, trash top-right */
 .hover-overlay {
   position: absolute;
   inset: 0;
@@ -73,7 +71,6 @@
   &:hover { color: #ff6b6b; }
 }
 
-/* Figma: absolute bottom, left/right 4.62%, justify-between, text-14px (0.875rem) white */
 .meta-bar {
   position: absolute;
   bottom: 0;
@@ -89,7 +86,6 @@
   white-space: nowrap;
 }
 
-/* Figma: two date parts with gap-20px (1.25rem) between them */
 .date-group {
   display: flex;
   align-items: center;

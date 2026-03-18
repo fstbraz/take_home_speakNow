@@ -48,7 +48,6 @@
   &:hover { background: rgba(229, 63, 40, 0.8); }
 }
 
-/* Figma: pl-12px pr-24px py-10px gap-24px, bottom-24px */
 .controls-bar {
   position: absolute;
   bottom: 1.5rem;
@@ -65,7 +64,6 @@
   white-space: nowrap;
 }
 
-/* Figma: 60×60px blue circle */
 .play-pause-btn {
   flex-shrink: 0;
   width: 3.75rem;  /* 60px */
@@ -83,7 +81,6 @@
   &:hover { opacity: 0.85; }
 }
 
-/* Figma: text-14px Lato Regular */
 .time {
   font-size: 0.875rem; /* 14px */
   font-weight: 400;
@@ -109,7 +106,6 @@
   cursor: pointer;
   outline: none;
 
-  /* Figma: white fill up to --pct, dim track after */
   --pct: 0%;
   background: linear-gradient(
     to right,
@@ -117,7 +113,6 @@
     rgba(255, 255, 255, 0.3) var(--pct)
   );
 
-  /* Figma: rectangular thumb 8×24px rounded-4px */
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 0.5rem;   /* 8px */

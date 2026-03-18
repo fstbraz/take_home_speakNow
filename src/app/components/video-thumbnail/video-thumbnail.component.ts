@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { VideoMeta } from '../../state/videos.state';
 
-/* Figma: duration shown as "10s" */
 function formatDuration(ms: number): string {
   return `${Math.round(ms / 1000)}s`;
 }
 
-/* Figma: date as two separate spans "31.01.2025" + gap + "13:30" */
 function formatDateParts(iso: string): { date: string; time: string } {
   const d = new Date(iso);
   const day = String(d.getDate()).padStart(2, '0');

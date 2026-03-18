@@ -1,4 +1,3 @@
-/* Figma: full-screen, rgba(0,0,0,0.5) + blur */
 .backdrop {
   position: fixed;
   inset: 0;
@@ -10,8 +9,6 @@
   z-index: 200;
 }
 
-/* Figma: white, w-400px (25rem), px-40px (2.5rem) py-20px (1.25rem),
-         rounded-8px (0.5rem), gap-24px (1.5rem) */
 .dialog {
   position: relative;
   background: #fff;
@@ -25,7 +22,6 @@
               0 0.75rem    1.5rem   rgba(51, 57, 105, 0.12);
 }
 
-/* Figma: just X icon, right-16px (1rem) top-16px (1rem), no circle */
 .btn-x {
   position: absolute;
   top: 1rem;
@@ -51,7 +47,6 @@
   gap: 0.5rem;
 }
 
-/* Figma: Lato Bold 16px (1rem), #292830 */
 .heading {
   margin: 0;
   font-size: 1rem;
@@ -60,7 +55,6 @@
   line-height: 1.5;
 }
 
-/* Figma: Lato Regular 14px (0.875rem), #5b5c6a */
 .sub {
   margin: 0;
   font-size: 0.875rem;
@@ -69,7 +63,6 @@
   line-height: 1.5;
 }
 
-/* Figma: gap-20px (1.25rem) */
 .actions {
   display: flex;
   gap: 1.25rem;
@@ -89,14 +82,12 @@
   &:hover { opacity: 0.85; }
 }
 
-/* Figma: Cancel = border #5061d0, text #5061d0 */
 .btn-cancel {
   background: #fff;
   border: 0.0625rem solid var(--c-blue);
   color: var(--c-blue);
 }
 
-/* Figma: Delete = bg #e53f28 */
 .btn-delete {
   background: #e53f28;
   border: none;
